@@ -3,14 +3,16 @@
 Created on Tue Jan  8 11:51:47 2019
 1: Task description:
     A series of letters (range in 3~7) would present on the screen during probe. Then the participants 
-    were asked to make the judgement about two letters' position during target phase
+    were asked to make the judgement about two letters were both shown before?
 
 2: Slow event fMRI design, trial structure:
-    probe(1s), fix1(2s), target(1s,yes/no; yes/no 2s), fix2(3s).
+    probe(1.5s), fix1(1.5s), target(1.5s,yes/no; yes/no 1.5s), fix2(3s).
     
-3: 4 runs, each run with 30 trials
+3: 3 runs, each run with 40 trials
 
 4: conditions: strings length range from 3~7. 5 conditions
+
+updated on Feb 21 2019
     
 @author: zg750
 """
@@ -73,7 +75,7 @@ yes_no_h = 62
 
 
 
-num_trials = 45 # total trial numbers of each run 
+num_trials = 40 # total trial numbers of each run 
 
 
 # presentation time of clue and probe
@@ -331,7 +333,7 @@ def run_stimuli(stimuli_file):
     event.waitKeys(keyList=['5'], timeStamped=True)
     #  remind the subjects that experiment starts soon.
     #ready()  
-    #core.wait(3)  # 2 TRs
+    core.wait(9)  # 2 TRs
     run_onset = win.flip() 
     
     print ('run_onset',run_onset)
