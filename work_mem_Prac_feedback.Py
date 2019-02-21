@@ -3,12 +3,12 @@
 Created on Tue Jan  8 11:51:47 2019
 1: Task description:
     A series of letters (range in 3~7) would present on the screen during probe. Then the participants 
-    were asked to make the judgement about two letters' position during target phase
+    were asked to make the judgement about two letters were both shown before--during probe phase
 
 2: Slow event fMRI design, trial structure:
-    probe(1s), fix1(2s), target(1s,yes/no; yes/no 2s), fix2(3s).
+    probe(1.5s), fix1(1.5s), target(1.5s,yes/no; yes/no 1.5s), fix2(3s).
     
-3: 4 runs, each run with 30 trials
+3: 3 runs for fMRI and one practice runs outside of scanner, each run with 40 trials
 
 4: conditions: strings length range from 3~7. 5 conditions
     
@@ -61,6 +61,7 @@ probe_pos = (0,0)
 fix_pos = (0,0)
 target_pos = (0,0)
 yes_pos = (-250,-180)
+acc_pos=(0,-180)
 no_pos = (250,-180)
 image_pos = (0,0) # instruction and trigger and get ready would be shown in images
 
@@ -73,7 +74,7 @@ yes_no_h = 62
 
 
 
-num_trials = 45 # total trial numbers of each run 
+num_trials = 40 # total trial numbers of each run 
 
 
 # presentation time of clue and probe
@@ -324,7 +325,7 @@ def run_stimuli(stimuli_file):
 #    
    # shuffle(all_trials) #- 
     trial_pres_num = 1 # initialize a counter (so that we can have mini-blocks of 10)
-              
+    corr_num=0.0       
     
     #trigger the scanner
     trigger_exp(curr_dic,'trigger.jpg')
@@ -463,16 +464,7 @@ def run_stimuli(stimuli_file):
                 #trial['correct'] = correct
                 trial['KeyPress'] = keypress
       
-        if Correctness==1:
-            Answer='Both Shown Before'
-        else:
-            Answer='Only One Shown Before'
-        fix2 = prep_cont(Answer,fix_pos,text_h,color = (1,-1,-1))
-        fix2.draw()
-        timetodraw = target_onset + timelimit_deci
-        while core.monotonicClock.getTime() < (timetodraw - (1/120.0)):
-            pass
-        fix2_onset = win.flip()          
+       
                 
                 
         trial['trial_order_id']=trial_pres_num
@@ -483,8 +475,7 @@ def run_stimuli(stimuli_file):
         trial['fixa1_durat']= fix1_durat
         trial['probe_onset'] = probe_onset - run_onset
         trial['probe_durat']= probe_durat
-        trial['fixa2_onset'] = fix2_onset -run_onset
-        trial['fixa2_durat']= fix2_durat
+
         trial['target_onset'] = target_onset - run_onset
         trial['target_offset'] = target_offset - run_onset
         trial['target_durat'] = target_durat
@@ -493,6 +484,31 @@ def run_stimuli(stimuli_file):
         trial['KeyPress'] = keypress
         trial['Correct_Key']=Correctness
         
+        if int(keypress)==int(Correctness):
+            corr_num +=1
+        else:
+            pass
+        
+        ACC=corr_num/trial_pres_num*100
+        ACC=round(ACC)
+        
+            
+        
+        if Correctness==1:
+            Answer='Both Shown Before'
+        else:
+            Answer='Only One Shown Before'
+        fix2 = prep_cont(Answer,fix_pos,text_h,color = (1,-1,-1))
+        acc=prep_cont(ACC,acc_pos,text_h,color=(1,-1,-1))
+        fix2.draw()
+        acc.draw()
+        timetodraw = target_onset + timelimit_deci
+        while core.monotonicClock.getTime() < (timetodraw - (1/120.0)):
+            pass
+        fix2_onset = win.flip()   
+        
+        trial['fixa2_onset'] = fix2_onset -run_onset
+        trial['fixa2_durat']= fix2_durat
         trial_pres_num +=1 # the number-th presentnted trial
         write_trial(filename,headers,trial)     # calls the function that writes csv output
        
